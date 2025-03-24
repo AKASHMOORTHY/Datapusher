@@ -2,6 +2,16 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
+    ADMIN = "admin"
+    EMPLOYEE = "employee"
+    ROLE_CHOICES = [
+        (ADMIN, "Admin"),
+        (EMPLOYEE, "Employee"),
+    ]
+
+    email = models.EmailField(unique=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=EMPLOYEE)
+
     # Add related_name to avoid conflicts
     groups = models.ManyToManyField(
         "auth.Group",
@@ -14,5 +24,8 @@ class User(AbstractUser):
         blank=True
     )
 
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
+
     def __str__(self):
-        return self.username
+        return f"{self.email} - {self.role}"
